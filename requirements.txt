@@ -1,8 +1,9 @@
-tensorflow==2.16.1
-numpy<2
+tensorflow==2.15.1
+protobuf==4.25.3
+numpy==1.26.4
 pandas
 matplotlib
 scikit-learn
 pillow
-opencv-python
+opencv-python-headless
 streamlit
