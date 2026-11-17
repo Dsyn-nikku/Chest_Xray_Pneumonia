@@ -4,6 +4,7 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 from pathlib import Path
+from io import BytesIO
 
 # Page configuration
 st.set_page_config(
@@ -40,23 +41,19 @@ st.warning(
 
 # Check model availability
 if not MODEL_PATH.exists():
-    st.error(
-        "Model not found! Please ensure "
-        "models/chest_xray_model.h5 exists."
-    )
+    st.error("Model not found! Please check the models folder.")
     st.stop()
 
 
-# Load model safely
+# Load model
 try:
     model = load_model()
+    st.success("AI Model loaded successfully!")
+
 except Exception as e:
     st.error("Unable to load the trained model.")
     st.exception(e)
     st.stop()
-
-
-st.success("AI Model loaded successfully!")
 
 
 # Upload image
@@ -69,20 +66,35 @@ uploaded_file = st.file_uploader(
 if uploaded_file is not None:
 
     try:
-        image = Image.open(uploaded_file).convert("RGB")
+        # Read image safely
+        image_bytes = uploaded_file.getvalue()
+
+        image = Image.open(
+            BytesIO(image_bytes)
+        ).convert("RGB")
 
         col1, col2 = st.columns(2)
 
+        # Display uploaded image
         with col1:
             st.subheader("Uploaded X-ray")
-            st.image(image, use_container_width=True)
 
+            st.image(
+                image,
+                caption="Uploaded Chest X-ray",
+                use_container_width=True
+            )
+
+        # Prediction section
         with col2:
             st.subheader("Prediction")
 
-            if st.button("Predict Pneumonia", type="primary"):
+            if st.button(
+                "Predict Pneumonia",
+                type="primary"
+            ):
 
-                # Image preprocessing
+                # Preprocessing
                 processed_image = image.resize((224, 224))
 
                 image_array = np.array(
@@ -111,7 +123,9 @@ if uploaded_file is not None:
                     result = "NORMAL"
                     score = 1 - prediction
 
-                st.success(f"Predicted class: {result}")
+                st.success(
+                    f"Predicted class: {result}"
+                )
 
                 st.metric(
                     "Model score for predicted class",
@@ -119,10 +133,10 @@ if uploaded_file is not None:
                 )
 
                 st.caption(
-                    "This score is not a calibrated probability of disease "
-                    "and is not medical certainty."
+                    "This score is not a calibrated probability "
+                    "of disease and is not medical certainty."
                 )
 
     except Exception as e:
-        st.error("Unable to process this image.")
+        st.error("Unable to display or process this image.")
         st.exception(e)
