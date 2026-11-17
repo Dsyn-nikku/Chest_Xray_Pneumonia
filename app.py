@@ -66,26 +66,25 @@ uploaded_file = st.file_uploader(
 if uploaded_file is not None:
 
     try:
-        # Read image safely
+        # Read uploaded image
         image_bytes = uploaded_file.getvalue()
 
         image = Image.open(
             BytesIO(image_bytes)
         ).convert("RGB")
 
+        # Display image and prediction side by side
         col1, col2 = st.columns(2)
 
-        # Display uploaded image
         with col1:
             st.subheader("Uploaded X-ray")
 
             st.image(
-                  image_bytes,
-                  caption="Uploaded Chest X-ray",
-                  width=400,
-                 output_format="JPEG"
-               )
-        # Prediction section
+                image,
+                caption="Uploaded Chest X-ray",
+                width=400
+            )
+
         with col2:
             st.subheader("Prediction")
 
