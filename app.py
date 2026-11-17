@@ -1,4 +1,5 @@
 
+import base64
 import streamlit as st
 import tensorflow as tf
 import numpy as np
@@ -73,11 +74,13 @@ if uploaded_file is not None:
             BytesIO(image_bytes)
         ).convert("RGB")
 
-        # Convert image to NumPy RGB array
-        image_array_display = np.asarray(
-            image,
-            dtype=np.uint8
-        )
+        # Convert image into Base64
+        buffer = BytesIO()
+        image.save(buffer, format="JPEG")
+
+        encoded_image = base64.b64encode(
+            buffer.getvalue()
+        ).decode("utf-8")
 
         # Display image and prediction side by side
         col1, col2 = st.columns(2)
@@ -85,11 +88,22 @@ if uploaded_file is not None:
         with col1:
             st.subheader("Uploaded X-ray")
 
-            st.image(
-                image_array_display,
-                caption="Uploaded Chest X-ray",
-                width=400,
-                channels="RGB"
+            st.markdown(
+                f"""
+                <div style="text-align:center;">
+                    <img
+                        src="data:image/jpeg;base64,{encoded_image}"
+                        width="400"
+                        style="
+                            max-width:100%;
+                            height:auto;
+                            border-radius:10px;
+                        "
+                    />
+                    <p>Uploaded Chest X-ray</p>
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
         with col2:
