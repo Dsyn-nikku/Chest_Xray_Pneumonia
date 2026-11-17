@@ -73,6 +73,12 @@ if uploaded_file is not None:
             BytesIO(image_bytes)
         ).convert("RGB")
 
+        # Convert image to NumPy RGB array
+        image_array_display = np.asarray(
+            image,
+            dtype=np.uint8
+        )
+
         # Display image and prediction side by side
         col1, col2 = st.columns(2)
 
@@ -80,9 +86,10 @@ if uploaded_file is not None:
             st.subheader("Uploaded X-ray")
 
             st.image(
-                image,
+                image_array_display,
                 caption="Uploaded Chest X-ray",
-                width=400
+                width=400,
+                channels="RGB"
             )
 
         with col2:
@@ -96,20 +103,20 @@ if uploaded_file is not None:
                 # Preprocessing
                 processed_image = image.resize((224, 224))
 
-                image_array = np.array(
+                prediction_array = np.array(
                     processed_image,
                     dtype=np.float32
                 )
 
-                image_array = np.expand_dims(
-                    image_array,
+                prediction_array = np.expand_dims(
+                    prediction_array,
                     axis=0
                 )
 
                 # Model prediction
                 prediction = float(
                     model.predict(
-                        image_array,
+                        prediction_array,
                         verbose=0
                     )[0][0]
                 )
