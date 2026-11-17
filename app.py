@@ -80,11 +80,11 @@ if uploaded_file is not None:
             st.subheader("Uploaded X-ray")
 
             st.image(
-                image,
-                caption="Uploaded Chest X-ray",
-                use_container_width=True
-            )
-
+                  image_bytes,
+                  caption="Uploaded Chest X-ray",
+                  width=400,
+                 output_format="JPEG"
+               )
         # Prediction section
         with col2:
             st.subheader("Prediction")
