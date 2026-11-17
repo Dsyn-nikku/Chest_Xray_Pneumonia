@@ -1,0 +1,11 @@
+venv/
+.venv/
+__pycache__/
+chest_xray/
+**/chest_xray/
+train/
+test/
+val/
+*.keras
+*.h5
+.DS_Store
